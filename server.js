@@ -32,17 +32,20 @@ app.get('/', (req, resp) => {
 
 //user register route
 app.post('/register', (req, resp) => {
-	const { Username, name, email, password } = req.body;
+	const { username, name, email, password } = req.body;
 
-	if (!Username || !name || !email || !password) {
+	if (!username || !name || !email || !password) {
 		resp.status(400).json('incorrect form submission')
 	}
 
 	if (!validator.isEmail(email)) resp.status(400).json('incorrect email format entered')
+	if (!validator.isAlphanumeric(username)) resp.status(400).json('incorrect username, cannot contain special characters')
+	if (!validator.isAlpha(name)) resp.status(400).json('incorrect name format')	
 
-	database.insert({ Username, name, email, password })
+
+	database.insert({ username, name, email, password })
 		.into('users')
-		.then(resolve => resp.send(`Registered ${Username} in DB`))
+		.then(resolve => resp.send(`Registered ${username} in DB`))
 		.catch(e => resp.status(400).json(e))
 })
 
