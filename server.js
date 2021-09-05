@@ -1,6 +1,7 @@
 const express = require('express')
 const knex = require('knex')
 const validator = require('validator')
+const Joi = require('joi')
 
 const database = knex({
 	client: 'mysql',
@@ -8,16 +9,17 @@ const database = knex({
 		host: '127.0.0.1',
 		user: 'root',
 		password: '',
-		database: 'socialchange'
-	}
+		database: 'socialchange',
+	},
 })
 
 // check database connectivity
-database.raw("SELECT username FROM users WHERE username = 'stee1ix'")
-	.then(() => console.log("MySQL connected "))
-	.catch((e) => {
-	    console.log("MySQL not connected")
-	    console.error(e)
+database
+	.raw("SELECT username FROM users WHERE username = 'stee1ix'")
+	.then(() => console.log('MySQL connected '))
+	.catch(e => {
+		console.log('MySQL not connected')
+		console.error(e)
 	})
 
 const app = express()
@@ -32,18 +34,22 @@ app.get('/', (req, resp) => {
 
 //user register route
 app.post('/register', (req, resp) => {
-	const { username, name, email, password } = req.body;
+	const { username, name, email, password, birth_date } = req.body
 
-	if (!username || !name || !email || !password) {
+	if (!username || !name || !email || !password || !birth_date) {
 		resp.status(400).json('incorrect form submission')
 	}
 
-	if (!validator.isEmail(email)) resp.status(400).json('incorrect email format entered')
-	if (!validator.isAlphanumeric(username)) resp.status(400).json('incorrect username, cannot contain special characters')
-	if (!validator.isAlpha(name)) resp.status(400).json('incorrect name format')	
+	if (!validator.isEmail(email))
+		resp.status(400).json('incorrect email format entered')
+	if (!validator.isAlphanumeric(username))
+		resp.status(400).json(
+			'incorrect username, cannot contain special characters'
+		)
+	if (!validator.isAlpha(name)) resp.status(400).json('incorrect name format')
 
-
-	database.insert({ username, name, email, password })
+	database
+		.insert({ username, name, email, password, birth_date })
 		.into('users')
 		.then(resolve => resp.send(`Registered ${username} in DB`))
 		.catch(e => resp.status(400).json(e))
