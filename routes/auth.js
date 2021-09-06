@@ -27,30 +27,39 @@ router.post('/register', async (req, resp) => {
 	const hashPassword = await bcrypt.hash(password, salt);
 
 	// check if username already exists
-	await database
-		.select('username')
-		.from('users')
-		.where({ username })
-		.then(data =>
-			resp.status(400).send(data[0].username + ' already exists')
-		)
-		.catch(e => console.log(e));
-
-	// writing user to DB
 	database
-		.insert({
-			username,
-			name,
-			email,
-			hash: hashPassword,
-			birth_date,
-			created_at: new Date(),
+		.select('username', 'email')
+		.from('users')
+		.whereRaw(`username = "${username}" OR email = "${email}"`)
+		.then(data => {
+			if (data[0]) {
+				if (data[0].username === username) {
+					resp.status(400).send(data[0].username + ' already exists');
+					return;
+				} else if (data[0].email === email) {
+					resp.status(400).send(data[0].email + ' already exists');
+					return;
+				}
+			} else {
+				// write user to DB
+				database
+					.insert({
+						username,
+						name,
+						email,
+						hash: hashPassword,
+						birth_date,
+						created_at: new Date(),
+					})
+					.into('users')
+					.then(resolve => resp.send(`Registered ${username} in DB`))
+					.catch(e => resp.status(400).json(e));
+			}
 		})
-		.into('users')
-		.then(resolve => resp.send(`Registered ${username} in DB`))
-		.catch(e => resp.status(400).json(e));
+		.catch(e => console.log(e));
 });
 
+//user login route
 router.post('/login', async (req, resp) => {
 	const { username, password } = req.body;
 
