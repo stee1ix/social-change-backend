@@ -2,14 +2,16 @@ const express = require('express');
 
 const app = express();
 
+// import routes
+const authRoute = require('./routes/auth');
+const postRoute = require('./routes/posts');
+
 // middlewares
 app.use(express.json());
 
-// import routes
-const authRoute = require('./routes/auth');
-
 // route middlewares
 app.use('/api/user', authRoute);
+app.use('/api/posts', postRoute);
 
 // root route
 app.get('/', (req, resp) => {

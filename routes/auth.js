@@ -2,6 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const database = require('../database');
+const jwt = require('jsonwebtoken');
 
 //user register route
 router.post('/register', async (req, resp) => {
@@ -68,7 +69,7 @@ router.post('/login', async (req, resp) => {
 		resp.status(400).json('incorrect form submission');
 
 	database
-		.select('username', 'hash')
+		.select('id', 'username', 'hash')
 		.from('users')
 		.where({ username })
 		.then(async data => {
@@ -81,7 +82,11 @@ router.post('/login', async (req, resp) => {
 					resp.status(400).send('Invalid Password');
 					return;
 				} else {
-					resp.status(200).send(`logged in as ${data[0].username}`);
+					//create and assign a token
+					const token = jwt.sign({ _id: data[0].id }, 'adfgbsgbkf');
+					resp.header('auth-token', token).send(
+						`logged in as ${data[0].username}`
+					);
 				}
 			}
 		})
