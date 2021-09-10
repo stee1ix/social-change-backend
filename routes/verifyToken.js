@@ -8,8 +8,8 @@ function auth(req, res, next) {
 	}
 
 	try {
-		const verified = jwt.verify(token, 'adfgbsgbkf');
-		req.userId = verified;
+		const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+		req.user = verified;
 		next();
 	} catch (error) {
 		res.status(400).send('Invalid Token');
@@ -17,3 +17,8 @@ function auth(req, res, next) {
 }
 
 module.exports = auth;
+
+// req.user = {
+// 	username: 'username',
+//  idt: created at time
+// }

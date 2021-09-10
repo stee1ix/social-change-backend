@@ -16,7 +16,7 @@ router.post('/register', async (req, resp) => {
 		resp.status(400).json('incorrect email format entered');
 	if (!validator.isAlphanumeric(username))
 		resp.status(400).json(
-			'incorrect username, cannot contain special characters'
+			'incorrect username format, cannot contain special characters'
 		);
 	if (!validator.isAlpha(name, 'en-US', { ignore: ' ' }))
 		resp.status(400).json('incorrect name format');
@@ -83,7 +83,10 @@ router.post('/login', async (req, resp) => {
 					return;
 				} else {
 					//create and assign a token
-					const token = jwt.sign({ _id: data[0].id }, 'adfgbsgbkf');
+					const token = jwt.sign(
+						{ username: data[0].username },
+						process.env.TOKEN_SECRET
+					);
 					resp.header('auth-token', token).send(
 						`logged in as ${data[0].username}`
 					);
