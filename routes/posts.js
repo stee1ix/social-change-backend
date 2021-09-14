@@ -19,4 +19,37 @@ router.post('/create', verify, (req, resp) => {
 		.catch(e => resp.status(400).json(e));
 });
 
+router
+	.route('/modify')
+	.delete(verify, (req, resp) => {
+		const { post_id } = req.body;
+
+		database('posts')
+			.where({ post_id })
+			.del()
+			.then(deleteCount => {
+				if (deleteCount > 0) {
+					resp.send(`post deleted`);
+				} else {
+					resp.sendStatus(400);
+				}
+			})
+			.catch(e => resp.status(400).json(e));
+	})
+	.patch(verify, (req, resp) => {
+		const { caption, post_id } = req.body;
+
+		database('posts')
+			.update({ caption, created_at: new Date() })
+			.where({ post_id })
+			.then(updateCount => {
+				if (updateCount > 0) {
+					resp.send(`caption updated`);
+				} else {
+					resp.sendStatus(400);
+				}
+			})
+			.catch(e => resp.status(400).json(e));
+	});
+
 module.exports = router;
