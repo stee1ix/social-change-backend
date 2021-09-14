@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const database = require('../database');
 const jwt = require('jsonwebtoken');
+const userModify = require('./user');
 
 //user register route
 router.post('/register', async (req, resp) => {
@@ -95,5 +96,7 @@ router.post('/login', async (req, resp) => {
 		})
 		.catch(e => console.log(e + ' error'));
 });
+
+router.use('/modify', userModify);
 
 module.exports = router;
