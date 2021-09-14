@@ -21,21 +21,21 @@ router.post('/create', verify, (req, resp) => {
 
 router
 	.route('/modify')
-	.delete(verify, (req, resp) => {
-		const { post_id } = req.body;
+	// .delete(verify, (req, resp) => {
+	// 	const { post_id } = req.body;
 
-		database('posts')
-			.where({ post_id })
-			.del()
-			.then(deleteCount => {
-				if (deleteCount > 0) {
-					resp.send(`post deleted`);
-				} else {
-					resp.sendStatus(400);
-				}
-			})
-			.catch(e => resp.status(400).json(e));
-	})
+	// 	database('posts')
+	// 		.where({ post_id })
+	// 		.del()
+	// 		.then(deleteCount => {
+	// 			if (deleteCount > 0) {
+	// 				resp.send(`post deleted`);
+	// 			} else {
+	// 				resp.sendStatus(400);
+	// 			}
+	// 		})
+	// 		.catch(e => resp.status(400).json(e));
+	// })
 	.patch(verify, (req, resp) => {
 		const { caption, post_id } = req.body;
 

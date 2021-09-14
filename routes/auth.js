@@ -99,4 +99,43 @@ router.post('/login', async (req, resp) => {
 
 router.use('/modify', userModify);
 
+//user delte route
+// router.delete('/delete', async (req, resp) => {
+// 	const { username, password } = req.body;
+
+// 	// validations
+// 	if (!username || !password)
+// 		resp.status(400).json('incorrect form submission');
+
+// 	database
+// 		.select('username', 'hash')
+// 		.from('users')
+// 		.where({ username })
+// 		.then(async data => {
+// 			if (!data[0]) {
+// 				resp.status(400).send('Username not found');
+// 				return;
+// 			} else {
+// 				const validPass = await bcrypt.compare(password, data[0].hash);
+// 				if (!validPass) {
+// 					resp.status(400).send('Invalid Password');
+// 					return;
+// 				} else {
+// 					database('users')
+// 						.where({ username })
+// 						.del()
+// 						.then(deleteCount => {
+// 							if (deleteCount > 0) {
+// 								resp.send(`user ${username} deleted`);
+// 							} else {
+// 								resp.sendStatus(400);
+// 							}
+// 						})
+// 						.catch(e => resp.status(400).json(e));
+// 				}
+// 			}
+// 		})
+// 		.catch(e => console.log(e + ' error'));
+// });
+
 module.exports = router;
