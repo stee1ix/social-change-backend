@@ -9,20 +9,34 @@ const userModify = require('./user');
 router.post('/register', async (req, resp) => {
 	const { username, name, email, password, birth_date } = req.body;
 
-	// validations
-	if (!username || !name || !email || !password || !birth_date)
-		resp.status(400).json('incorrect form submission');
+	console.log({ username, name, email, password, birth_date });
 
-	if (!validator.isEmail(email))
-		resp.status(400).json('incorrect email format entered');
-	if (!validator.isAlphanumeric(username))
-		resp.status(400).json(
+	// validations
+	if (!username || !name || !email || !password || !birth_date) {
+		resp.status(400).send('incorrect form submission');
+		return;
+	}
+
+	if (!validator.isEmail(email)) {
+		resp.status(400).send('incorrect email format entered');
+		return;
+	}
+	if (!validator.isAlphanumeric(username)) {
+		resp.status(400).send(
 			'incorrect username format, cannot contain special characters'
 		);
-	if (!validator.isAlpha(name, 'en-US', { ignore: ' ' }))
-		resp.status(400).json('incorrect name format');
-	if (!validator.isDate(birth_date))
-		resp.status(400).json('incorrect date format');
+		return;
+	}
+	if (!validator.isAlpha(name, 'en-US', { ignore: ' ' })) {
+		resp.status(400).send('incorrect name format');
+		return;
+	}
+
+	if (!validator.isDate(birth_date)) {
+		params;
+		resp.status(400).send('incorrect date format');
+		return;
+	}
 
 	// hashing password
 	const salt = await bcrypt.genSalt(10);
@@ -55,7 +69,7 @@ router.post('/register', async (req, resp) => {
 					})
 					.into('users')
 					.then(resolve => resp.send(`Registered ${username} in DB`))
-					.catch(e => resp.status(400).json(e));
+					.catch(e => resp.status(400).send(e));
 			}
 		})
 		.catch(e => console.log(e));
@@ -66,8 +80,10 @@ router.post('/login', async (req, resp) => {
 	const { username, password } = req.body;
 
 	// validations
-	if (!username || !password)
+	if (!username || !password) {
 		resp.status(400).json('incorrect form submission');
+		return;
+	}
 
 	database
 		.select('id', 'username', 'hash')
@@ -88,9 +104,8 @@ router.post('/login', async (req, resp) => {
 						{ username: data[0].username },
 						process.env.TOKEN_SECRET
 					);
-					resp.header('auth-token', token).send(
-						`logged in as ${data[0].username}`
-					);
+					resp.header('auth-token', token).send(data[0].username);
+					return;
 				}
 			}
 		})
